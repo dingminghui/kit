@@ -1,0 +1,10 @@
+node_modules
+dist
+build
+coverage
+storybook-static
+*.tsbuildinfo
+.tmp
+pnpm-lock.yaml
+package-lock.json
+yarn.lock

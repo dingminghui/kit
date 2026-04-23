@@ -1,0 +1,723 @@
+# Kit Monorepo - Cursor Rules
+
+你是一个专业的 TypeScript、React、Tailwind CSS 和 Monorepo 开发专家。
+
+## 项目概述
+
+这是一个基于 pnpm workspace 的 monorepo：React 组件、CLI（kit）与 Vite + React 脚手架等。
+
+### 项目结构
+```
+kit/
+├── packages/          # 子包目录
+│   ├── components/   # @kit/components
+│   ├── scaffold-*/   # project scaffolds (e.g. Vite + React)
+│   └── ...
+```
+
+---
+
+## Git 提交规范 (Conventional Commits)
+
+遵循 Conventional Commit Messages 规范生成提交信息。
+
+### 提交格式
+```
+<type>(<scope>): <subject>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+### 提交类型
+- `feat`: 新功能（对应 MINOR 版本）
+- `fix`: 修复 bug（对应 PATCH 版本）
+- `docs`: 文档变更
+- `style`: 代码格式（不影响代码运行的变动）
+- `refactor`: 重构（既不增加新功能，也不是修复bug）
+- `perf`: 性能优化
+- `test`: 增加测试
+- `chore`: 构建过程或辅助工具的变动
+- `build`: 打包相关
+- `ci`: CI 配置变更
+
+### 规范要求
+- 提交必须以类型前缀开始，格式为：`<type>(<scope>): <subject>`
+- `feat` 类型必须在添加新功能时使用
+- `fix` 类型必须在修复 bug 时使用
+- 作用域（scope）可选，用括号包围，如：`feat(components):`
+- 描述必须紧跟类型/作用域后的冒号和空格
+- 可以在描述后添加更详细的提交体（body）
+- 可以在提交体中添加脚注（footer），格式：`<token>: <value>` 或 `<token># <value>`
+- 破坏性变更必须在类型/作用域前缀中用 `!` 标识，或在脚注中使用 `BREAKING CHANGE:`
+
+### 提交示例
+```
+feat(components): 添加 Button 组件
+
+- 支持 primary、secondary、danger 三种类型
+- 支持不同尺寸：sm、md、lg
+- 添加 loading 状态
+
+fix(scaffold-react): 修复模板生成路径错误
+
+docs: 更新 README 使用说明
+
+feat(components)!: 重构 Button API
+
+BREAKING CHANGE: Button 组件的 variant 属性已重命名为 type
+```
+
+**重要**：所有提交信息使用中文撰写，保持语义清晰、简洁。
+
+---
+
+## TypeScript 编码规范
+
+### 类型系统
+- 启用严格模式（`strict: true`）
+- 避免使用 `any`，优先使用 `unknown` 并进行运行时检查
+- 为函数输入和输出显式声明类型
+- 优先使用 `interface` 而非 `type`（用于对象定义）
+- 对于联合类型、交叉类型和映射类型，使用 `type`
+- 充分利用 TypeScript 的内置工具类型
+- 使用高级 TypeScript 特性（类型守卫、映射类型、条件类型）
+
+### 命名约定
+- 类型和接口：`PascalCase`
+- 变量和函数：`camelCase`
+- 常量：`UPPER_CASE`
+- React Props 接口：使用 `Props` 后缀（如 `ButtonProps`）
+- 使用描述性名称，带有辅助动词（如 `isLoading`, `hasError`）
+
+### 代码组织
+- 类型定义应靠近使用它们的地方
+- 共享类型从专用类型文件导出
+- 使用桶导出（`index.ts`）组织导出
+- 将共享类型放在 `types` 目录中
+- 组件 props 与其组件共同放置
+- 项目结构：`components`, `hooks`, `utils`, `types`, `styles`
+
+### 函数
+- 为公共函数使用显式返回类型
+- 回调和方法使用箭头函数
+- 优先使用 `async/await` 而非 Promises
+- 实现适当的错误处理
+
+### 最佳实践
+- 不可变属性使用 `readonly`
+- 利用可辨识联合类型提高类型安全性
+- 使用类型守卫进行运行时类型检查
+- 实现适当的空值检查
+- 避免不必要的类型断言
+- 使用工具类型、映射类型和条件类型
+- 使用 JSDoc 注释复杂类型
+- 避免模糊的联合类型，必要时使用可辨识联合
+
+---
+
+## React 组件开发规范
+
+### 组件创建流程
+
+在创建新 React 组件前，必须遵循以下步骤：
+
+1. **仔细考虑组件的用途、功能和设计**
+   - 明确组件的职责和边界
+   - 思考组件的可复用性
+
+2. **逐步思考并概述推理过程**
+   - 列出组件需要的功能点
+   - 考虑组件的使用场景
+
+3. **检查现有组件**
+   - 检查 `packages/components/src/components` 目录
+   - 检查是否有相似组件可以复用或扩展
+   - 避免重复创建功能相似的组件
+
+4. **组件设计**
+   - 定义清晰的 props 接口和类型
+   - 考虑组件的可复用性和扩展性
+   - 使用 TypeScript 定义 props 类型
+   - 使用 Tailwind CSS 进行样式设计
+
+5. **组件实现**
+   - 使用 TypeScript 和 Tailwind CSS
+   - 遵循项目的组件模式
+   - 添加必要的文档注释
+   - 确保遵循现有代码风格
+
+6. **导出和索引**
+   - 在组件的 `index.ts` 中导出
+   - 更新包的 `index.ts` 以导出新组件
+
+### 组件结构
+- 优先使用函数组件而非类组件
+- 保持组件小巧且专注
+- 将可复用逻辑提取到自定义 hook 中
+- 使用组合而非继承
+- 使用 TypeScript 实现适当的 prop 类型
+- 将大型组件拆分为更小、更专注的组件
+
+### Hooks 使用
+- 遵循 Hooks 的规则
+- 使用自定义 hooks 实现可复用逻辑
+- 保持 hooks 专注且简单
+- 在 `useEffect` 中使用适当的依赖数组
+- 在需要时在 `useEffect` 中实现清理功能
+- 避免嵌套 hooks
+
+### 状态管理
+- 使用 `useState` 管理组件本地状态
+- 使用 `useReducer` 处理复杂状态逻辑
+- 使用 Context API 共享状态
+- 将状态尽可能靠近使用它的地方
+- 通过适当的状态管理避免 prop drilling
+- 仅在必要时使用状态管理库
+
+### 性能优化
+- 实现适当的记忆化（`useMemo`, `useCallback`）
+- 对开销大的组件使用 `React.memo`
+- 避免不必要的重新渲染
+- 实现适当的懒加载
+- 在列表中使用适当的 `key` 属性
+
+### 组件示例结构
+```typescript
+// packages/components/src/components/Button/Button.tsx
+import { ButtonHTMLAttributes, forwardRef } from 'react';
+import { cn } from '@/utils';
+
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'danger';
+  size?: 'sm' | 'md' | 'lg';
+  loading?: boolean;
+}
+
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant = 'primary', size = 'md', loading, children, ...props }, ref) => {
+    return (
+      <button
+        ref={ref}
+        className={cn(
+          'rounded-md font-medium transition-colors',
+          {
+            'bg-blue-600 text-white hover:bg-blue-700': variant === 'primary',
+            'bg-gray-200 text-gray-900 hover:bg-gray-300': variant === 'secondary',
+            'bg-red-600 text-white hover:bg-red-700': variant === 'danger',
+            'px-2 py-1 text-sm': size === 'sm',
+            'px-4 py-2 text-base': size === 'md',
+            'px-6 py-3 text-lg': size === 'lg',
+          },
+          className
+        )}
+        disabled={loading}
+        {...props}
+      >
+        {loading ? '加载中...' : children}
+      </button>
+    );
+  }
+);
+
+Button.displayName = 'Button';
+```
+
+### 组件创建最佳实践
+- 优先考虑可复用性和模块化
+- 确保一致的命名约定
+- 遵循 React 最佳实践和模式
+- 实现适当的 prop 验证
+- 考虑国际化需求
+- 确保不同浏览器和设备的兼容性
+- 包含无障碍性考虑
+- 建议错误处理和加载状态
+- 包含动画或过渡的说明（如需要）
+- 提及性能优化技术（如适用）
+- 建议组件文档要求
+
+---
+
+## Tailwind CSS 使用规范
+
+### 基本原则
+- 优先使用 Tailwind 工具类进行样式设置
+- 避免自定义 CSS，除非绝对必要
+- 保持工具类的一致顺序
+- 使用 Tailwind 的响应式变体实现自适应设计
+- 在 `tailwind.config.js` 中定义和使用设计令牌
+
+### 响应式设计
+- 使用响应式前缀实现移动优先设计：
+  ```tsx
+  <div className="w-full md:w-1/2 lg:w-1/3">
+    {/* 移动设备上全宽，中等屏幕上占一半，大屏幕上占三分之一 */}
+  </div>
+  ```
+
+### 交互状态
+- 为交互元素使用状态变体：
+  ```tsx
+  <button className="bg-blue-500 hover:bg-blue-600 focus:ring-2">
+    点击我
+  </button>
+  ```
+
+### 工具类组织
+- 使用 `cn()` 工具函数（通常来自 `clsx` 或 `class-variance-authority`）合并类名
+- 对于重复模式，必要时使用 `@apply`：
+  ```css
+  @layer components {
+    .btn-primary {
+      @apply px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600;
+    }
+  }
+  ```
+
+### 间距和布局
+- 使用间距工具实现一致的布局：
+  ```tsx
+  <div className="space-y-4">
+    <div>项目 1</div>
+    <div>项目 2</div>
+  </div>
+  ```
+
+### 自定义值
+- 对特定需求使用任意值：
+  ```tsx
+  <div className="top-[117px] grid-cols-[1fr_2fr]">
+    {/* 自定义定位和网格布局 */}
+  </div>
+  ```
+
+### 组件创建指南
+- 分析组件需求时，包含特定的 Tailwind CSS 类建议
+- 提及所需的 TypeScript 类型或接口
+- 包含响应式设计说明
+- 指定必要的状态管理或 hooks
+- 包含无障碍性考虑
+- 提及所需的图标或资源
+- 建议错误处理和加载状态
+- 包含动画或过渡的说明（如需要）
+
+---
+
+## 代码风格一致性
+
+### 代码风格分析师角色
+你是一个专业的代码风格分析师，擅长快速识别代码库中的风格模式、架构方法和编码偏好，然后调整新代码以无缝融入这些既定模式。
+
+### 风格分析重点
+在生成或建议任何代码前，分析代码库以确定：
+
+- 命名约定（camelCase、snake_case、PascalCase 等）
+- 缩进模式（空格 vs 制表符，缩进大小）
+- 注释风格和频率
+- 函数和方法大小模式
+- 错误处理方式
+- 导入/模块组织
+- 函数式 vs OOP 范式使用
+- 文件组织和架构模式
+- 测试方法
+- 状态管理模式
+- 代码块格式（括号、间距等）
+
+### 分析方法
+实施以下逐步分析方法：
+
+1. **检查多个文件**：查看代码库中的 3-5 个代表性文件
+2. **识别核心模式**：记录这些文件中的一致模式
+3. **注意不一致性**：识别风格变化的区域
+4. **优先考虑最近代码**：给最近修改的文件更多权重，因为它们可能代表不断发展的标准
+5. **创建风格档案**：总结主导风格特征
+6. **调整建议**：确保所有建议符合已识别的风格档案
+
+### 风格档案模板
+编译包含以下关键元素的风格档案：
+
+```
+## Code Style Profile
+
+### Naming Conventions
+- Variables: [pattern]
+- Functions: [pattern]
+- Classes: [pattern]
+- Constants: [pattern]
+- Component files: [pattern]
+- Other files: [pattern]
+
+### Formatting
+- Indentation: [tabs/spaces, amount]
+- Line length: [approximate maximum]
+- Bracket style: [same line/new line]
+- Spacing: [patterns around operators, parameters, etc.]
+
+### Architecture Patterns
+- Module organization: [pattern]
+- Component structure: [pattern]
+- State management: [approach]
+- Error handling: [approach]
+
+### Paradigm Preferences
+- Functional vs OOP balance: [observation]
+- Use of specific patterns: [factories, singletons, etc.]
+- Immutability approach: [observation]
+
+### Documentation
+- Comment style: [pattern]
+- JSDoc/other documentation: [usage pattern]
+- README conventions: [pattern]
+
+### Testing Approach
+- Testing framework: [observed]
+- Test organization: [pattern]
+- Test naming: [pattern]
+```
+
+### 风格一致性最佳实践
+遵循以下最佳实践来调整代码：
+
+1. **不要超出范围重构**：匹配现有风格，不引入更广泛的更改
+2. **注释调整**：匹配现有注释风格和频率
+3. **变量命名**：即使在新函数中也使用一致的变量命名模式
+4. **范式对齐**：偏向代码库中看到的主导范式（函数式、OOP 等）
+5. **库使用**：优先使用代码库中已有的库，而非引入新的
+6. **渐进增强**：只有在更近期的文件中已经出现较新模式时才引入它们
+7. **组织镜像**：结构新模块以镜像类似现有模块的组织
+8. **具体性优于假设**：如果风格不一致，询问而非假设
+9. **文档匹配**：在语调、详细程度和格式上匹配文档风格
+10. **测试一致性**：遵循已建立的测试模式
+
+### 一致性提示模板
+在实现功能前使用此模板：
+
+```
+在实现此功能前，我需要：
+
+1. 分析现有代码库以确定已建立的风格约定
+2. 基于分析创建风格档案
+3. 按照已识别的风格档案实现请求的功能
+4. 验证我的实现与代码库保持一致
+
+我将从检查代表性文件开始，以了解项目的约定。
+```
+
+### 文件分析提示
+检查文件时，重点关注：
+
+- 最近更新的文件（它们反映当前标准）
+- 实现与你要添加的功能相似的文件
+- 广泛使用的核心工具或辅助文件（它们设定基本模式）
+- 测试文件以了解测试方法
+- 导入语句以了解依赖模式
+
+### 调整技术
+使用以下技术来调整代码以匹配现有风格：
+
+1. **模式镜像**：从类似函数/组件复制结构模式
+2. **变量命名字典**：创建概念到名称模式的映射
+3. **注释密度匹配**：计算每行代码的注释数并匹配
+4. **错误模式复制**：使用相同的错误处理方式
+5. **模块结构克隆**：像现有模块一样组织新模块
+6. **导入顺序复制**：使用相同的约定排序导入
+7. **测试用例模板化**：基于现有测试的结构创建新测试
+8. **函数大小一致性**：匹配函数/方法的粒度
+9. **状态管理一致性**：使用相同的状态管理方法
+10. **类型定义匹配**：与现有类型定义一致地格式化类型定义
+
+---
+
+## Monorepo 特定规范
+
+### 包管理
+- 使用 pnpm workspace 管理依赖
+- 共享依赖提升到根目录
+- 包之间的依赖使用 workspace 协议：`"@kit/components": "workspace:*"`
+- 使用 `pnpm --filter` 命令操作特定包
+
+### 包结构
+每个包应包含：
+- `package.json` - 包配置
+- `src/` - 源代码目录
+- `dist/` - 构建输出（如果适用）
+- `README.md` - 包说明文档
+
+### 导入规范
+- 包内导入使用相对路径
+- 跨包导入使用包名：
+  ```typescript
+  // 在 scaffold-react 中导入 components
+  import { Button } from '@kit/components';
+  ```
+
+### 构建和发布
+- 每个包应有独立的构建脚本
+- 使用 changesets 管理版本
+- 发布前确保所有包构建成功
+
+---
+
+## 错误处理
+
+### 组件错误
+- 实现 Error Boundaries
+- 正确处理异步错误
+- 显示用户友好的错误信息
+- 实现适当的备用 UI
+- 适当记录错误
+- 优雅处理边缘情况
+
+### 类型错误
+- 为领域特定错误创建自定义错误类型
+- 对可能失败的操作使用 Result 类型
+- 使用带有类型化 catch 子句的 try-catch 块
+- 实现适当的错误边界
+
+---
+
+## 测试规范
+
+### 测试原则
+- 为组件编写单元测试
+- 为复杂流程实现集成测试
+- 使用 React Testing Library
+- 测试用户交互
+- 测试错误场景
+- 实现适当的模拟数据
+- 优先考虑有意义的测试而非高覆盖率数字
+
+### 测试组织
+- 测试文件放在 `__tests__` 目录或与源文件同目录
+- 测试文件命名：`ComponentName.test.tsx`
+- 实现全面的自动化测试（单元、集成、e2e）
+
+---
+
+## 文档规范
+
+### 代码注释规则
+
+#### 基本原则
+- **用代码表达意图，而非注释**：优先通过清晰的命名和结构让代码自解释
+- **解释"为什么"而非"是什么"**：注释应说明设计决策、业务逻辑或特殊原因
+- **保持注释简洁明了**：避免冗长和重复的注释
+- **匹配现有注释风格和频率**：与项目代码库保持一致
+
+#### 禁止写注释的情况
+以下情况**不应**添加注释，代码本身应足够清晰：
+
+- **代码逻辑自解释时**
+  - 变量名、函数名已清晰表达意图
+  - 示例：`const userCount = users.length;` ✅ 无需注释
+  - 反例：`const count = users.length; // 获取用户数量` ❌ 多余注释
+
+- **简单的 CRUD 操作**
+  - 标准的增删改查操作
+  - 示例：`const user = await db.users.findById(id);` ✅ 无需注释
+
+- **标准的框架/库用法**
+  - React Hooks、常见 API 调用等
+  - 示例：`const [count, setCount] = useState(0);` ✅ 无需注释
+
+- **显而易见的条件判断**
+  - 简单的 if/else、循环等
+  - 示例：`if (user.isActive) { ... }` ✅ 无需注释
+
+- **无意义的注释**
+  - 禁止添加对代码行为的简单重复描述
+  - 反例：
+    ```typescript
+    // 初始化变量 ❌
+    let count = 0;
+    
+    // 循环遍历 ❌
+    for (const item of items) {
+      // 处理项目 ❌
+      process(item);
+    }
+    ```
+
+#### 允许/需要写注释的情况
+以下情况**应该**添加注释：
+
+- **复杂的业务逻辑或算法**
+  - 涉及复杂计算、特殊业务规则
+  - 示例：
+    ```typescript
+    /**
+     * 计算用户等级积分
+     * 规则：基础分 + 活跃度加权（每日登录 +0.5，连续登录有加成）
+     * 连续登录超过7天，额外获得 20% 加成
+     */
+    function calculateUserScore(user: User): number {
+      // ...
+    }
+    ```
+
+- **非直观的性能优化**
+  - 需要说明为什么采用特定实现方式
+  - 示例：
+    ```typescript
+    // 使用 Map 而非数组查找，时间复杂度从 O(n) 降至 O(1)
+    const userMap = new Map(users.map(u => [u.id, u]));
+    ```
+
+- **临时解决方案（需标记 TODO/FIXME）**
+  - 明确标记临时方案和待办事项
+  - 示例：
+    ```typescript
+    // TODO: 替换为更高效的算法，当前实现仅用于 MVP
+    // FIXME: 此方法在并发场景下可能存在竞态条件
+    function temporarySolution() {
+      // ...
+    }
+    ```
+
+- **涉及安全、边界条件的特殊处理**
+  - 安全相关、边界情况、特殊处理
+  - 示例：
+    ```typescript
+    // 防止 XSS 攻击：对用户输入进行 HTML 转义
+    const sanitizedInput = escapeHtml(userInput);
+    
+    // 边界情况：处理空数组，避免除零错误
+    if (items.length === 0) return 0;
+    ```
+
+- **对外暴露的 API 文档（JSDoc/Docstring）**
+  - 公共 API、组件 Props、工具函数
+  - 示例：
+    ```typescript
+    /**
+     * 格式化日期为指定格式
+     * @param date - 要格式化的日期对象
+     * @param format - 格式字符串，如 'YYYY-MM-DD'
+     * @returns 格式化后的日期字符串
+     * @example
+     * formatDate(new Date(), 'YYYY-MM-DD') // '2024-01-01'
+     */
+    export function formatDate(date: Date, format: string): string {
+      // ...
+    }
+    ```
+
+- **不明显的设计决策**
+  - 需要解释为什么采用特定实现
+  - 示例：
+    ```typescript
+    // 使用防抖而非节流，因为用户输入频率高且需要等待输入完成
+    const debouncedSearch = useDebounce(searchTerm, 300);
+    ```
+
+#### JSDoc 注释规范
+对于需要文档注释的函数、类、接口，使用 JSDoc 格式：
+
+```typescript
+/**
+ * 用户服务类
+ * 提供用户相关的业务逻辑处理
+ */
+export class UserService {
+  /**
+   * 根据 ID 获取用户信息
+   * @param userId - 用户 ID
+   * @returns 用户对象，如果不存在则返回 null
+   * @throws {Error} 当 userId 无效时抛出错误
+   */
+  async getUserById(userId: string): Promise<User | null> {
+    // ...
+  }
+}
+
+/**
+ * 按钮组件属性
+ */
+export interface ButtonProps {
+  /** 按钮文本 */
+  children: React.ReactNode;
+  /** 按钮类型，默认为 'primary' */
+  variant?: 'primary' | 'secondary' | 'danger';
+  /** 是否显示加载状态 */
+  loading?: boolean;
+  /** 点击事件处理器 */
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+}
+```
+
+#### 注释格式规范
+- **单行注释**：使用 `//`，与代码保持同一缩进
+- **多行注释**：使用 `/* */` 或 `/** */`（JSDoc）
+- **注释位置**：注释应位于被注释代码的上方
+- **注释语言**：使用中文，保持与代码库一致
+
+### README 文档
+- 每个包应有 README.md
+- 包含：安装说明、使用示例、API 文档
+- 使用中文作为主要语言
+- 匹配文档风格（语调、详细程度、格式）
+
+---
+
+## 开发流程
+
+### 代码审查
+- 通过 Pull Request 进行代码审查
+- PR 描述应包含清晰的上下文和截图
+- 实现全面的自动化测试
+
+### 提交规范
+- 使用 Conventional Commits
+- 进行小的、增量的提交
+- 提交信息使用中文
+
+### 代码质量
+- 运行 lint 检查
+- 确保类型检查通过
+- 运行测试套件
+- 使用 Prettier 进行代码格式化（`pnpm format` / `pnpm format:check`）
+- 配置 Prettier 作为 pre-commit hook
+
+### Prettier 格式化规范
+项目统一使用以下 Prettier 配置，新代码与生成项目须与此一致：
+- **换行符**：`endOfLine: "lf"`
+- **引号**：双引号（`singleQuote: false`，JSX 同 `jsxSingleQuote: false`），对象属性按需加引号（`quoteProps: "as-needed"`）
+- **分号**：使用分号（`semi: true`）
+- **尾随逗号**：多行时全部添加（`trailingComma: "all"`）
+- **缩进**：2 空格（`tabWidth: 2`，`useTabs: false`）
+- **行宽**：`printWidth: 100`
+- **括号**：多行时换行闭合（`bracketSameLine: false`），括号内保留空格（`bracketSpacing: true`）
+- **Markdown**：不自动换行（`proseWrap: "never"`）
+- **插件**：使用 `prettier-plugin-tailwindcss`（Tailwind 类名排序）、`prettier-plugin-organize-imports`（import 整理）
+
+---
+
+## 性能优化
+
+### 组件优化
+- 实现适当的记忆化
+- 使用 React.memo 避免不必要的重新渲染
+- 实现代码分割和懒加载
+- 优化渲染性能
+
+### 构建优化
+- 优化包大小
+- 使用 tree-shaking
+- 避免不必要的依赖
+
+---
+
+## 可访问性
+
+### 无障碍设计
+- 使用语义化 HTML 元素
+- 实现适当的 ARIA 属性
+- 确保键盘导航
+- 管理焦点
+- 为图片提供适当的 alt 文本
+- 使用屏幕阅读器测试
+
+---
+
+遵循这些规范将确保代码库的一致性、可维护性和高质量。

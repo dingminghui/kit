@@ -1,0 +1,34 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Testing
+coverage
+*.log
+
+# Production
+dist
+build
+*.tsbuildinfo
+
+# Misc
+.DS_Store
+.codex
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# pnpm
+.pnpm-store
+
+# Changeset
+.changeset/*.md
+!/.changeset/README.md
