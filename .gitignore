@@ -18,6 +18,7 @@ build
 .env
 .env.local
 .env.*.local
+!packages/scaffold-vite-react/src/templates/base/.env.local
 
 # IDE
 .idea
