@@ -15,7 +15,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup && mkdir -p dist/templates && cp -r src/templates/* dist/templates/",
+    "build": "tsup && rm -rf dist/templates && mkdir -p dist/templates && cp -r src/templates/* dist/templates/",
     "clean": "rm -rf dist"
   },
   "dependencies": {

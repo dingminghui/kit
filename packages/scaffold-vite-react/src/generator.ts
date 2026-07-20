@@ -163,13 +163,8 @@ function generatePackageJson(
   versions: Record<string, string>,
 ): Record<string, unknown> {
   const scripts = {
-    dev: "vite --open --mode local",
-    "dev:local": "vite --open --mode local",
-    "dev:develop": "vite --open --mode develop",
+    dev: "vite --open --mode develop",
     build: "vite build --mode production",
-    "build:local": "vite build --mode local",
-    "build:develop": "vite build --mode develop",
-    "build:prod": "vite build --mode production",
     preview: "vite preview",
     test: "vitest",
     "test:ci": "vitest run",
