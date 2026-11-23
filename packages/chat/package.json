@@ -1,7 +1,7 @@
 {
   "name": "@kit/chat",
   "version": "0.1.0",
-  "description": "Chat UI template (SSE, session hook, Markdown); kit add chat → src/lib",
+  "description": "Chat UI template (SSE, session hook, Markdown); kit add chat → src/libs",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

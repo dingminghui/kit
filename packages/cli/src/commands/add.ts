@@ -10,11 +10,11 @@ import type { Command } from "./types.js";
 const MODULE_REGISTRY = {
   "pdf-viewer": {
     packageName: "@kit/pdf-viewer",
-    importHint: 'import { PdfViewer } from "@/lib/pdf-viewer";',
+    importHint: 'import { PdfViewer } from "@/libs/pdf-viewer";',
   },
   chat: {
     packageName: "@kit/chat",
-    importHint: 'import { ChatPanel, createSSETransport } from "@/lib/chat";',
+    importHint: 'import { ChatPanel, createSSETransport } from "@/libs/chat";',
   },
 } as const;
 
@@ -123,7 +123,7 @@ export const addCommand: Command = {
 
     const cwd = process.cwd();
     const srcDir = path.join(cwd, "src");
-    const libsDir = path.join(cwd, "src", "lib");
+    const libsDir = path.join(cwd, "src", "libs");
     const targetDir = path.join(libsDir, moduleName);
 
     if (!existsSync(srcDir)) {
@@ -148,7 +148,9 @@ export const addCommand: Command = {
     try {
       await installDeps(cwd, moduleName);
       console.log();
-      console.log(chalk.green(`依赖安装完成。可在代码中: ${MODULE_REGISTRY[moduleName].importHint}`));
+      console.log(
+        chalk.green(`依赖安装完成。可在代码中: ${MODULE_REGISTRY[moduleName].importHint}`),
+      );
       console.log();
     } catch (err) {
       const moduleDeps = getModuleDeps(moduleName);

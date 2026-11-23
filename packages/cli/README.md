@@ -30,7 +30,7 @@ kit create [项目名称]
 
 ### add - 向现有项目添加模块
 
-向当前项目 `src/lib` 添加可复用模块，并自动安装模块依赖。
+向当前项目 `src/libs` 添加可复用模块，并自动安装模块依赖。
 
 ```bash
 kit add pdf-viewer
