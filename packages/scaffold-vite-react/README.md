@@ -75,6 +75,9 @@ kit create my-app
 - MSW（Mock Service Worker）
 - API 请求层（axios + token 鉴权 + Layouts）
 
+- 选择 Playwright 后，执行 `pnpm prepare:e2e` 安装 Chromium。
+- 选择 MSW 后，执行 `pnpm dev:mock` 启动 Mock 环境。依赖安装时会自动生成 worker，可通过 `pnpm mock:init` 重新生成。
+
 ## 更新模板版本
 
 编辑 `package.json` 中的 `templateVersions` 字段来更新生成项目的依赖版本。

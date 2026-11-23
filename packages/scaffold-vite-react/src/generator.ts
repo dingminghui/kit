@@ -12,6 +12,7 @@ import { getTemplatesDir, processTemplate, readVersions } from "./utils/template
 export async function generateProject(options: ProjectOptions): Promise<void> {
   const templatesDir = getTemplatesDir();
   const targetDir = path.resolve(process.cwd(), options.projectName);
+  const withPlaywright = options.features.includes("playwright");
   const rollback = new Rollback();
   const spinner = ora();
 
@@ -45,7 +46,7 @@ export async function generateProject(options: ProjectOptions): Promise<void> {
     spinner.succeed("package.json 生成完成");
 
     // 添加 Playwright 配置
-    if (options.features.includes("playwright")) {
+    if (withPlaywright) {
       spinner.start("添加 Playwright 配置...");
       await copyPlaywrightTemplate(templatesDir, targetDir);
       const extras = await fs.readJson(path.join(templatesDir, "playwright/package.json.extras"));
@@ -57,6 +58,9 @@ export async function generateProject(options: ProjectOptions): Promise<void> {
     if (options.features.includes("msw")) {
       spinner.start("添加 MSW 配置...");
       await copyMswTemplate(templatesDir, targetDir);
+      if (withPlaywright) {
+        await fs.copy(path.join(templatesDir, "msw/tests"), path.join(targetDir, "tests"));
+      }
       const extras = await fs.readJson(path.join(templatesDir, "msw/package.json.extras"));
       await mergePackageJsonExtras(path.join(targetDir, "package.json"), extras, versions);
       spinner.succeed("MSW 配置添加完成");
@@ -66,6 +70,9 @@ export async function generateProject(options: ProjectOptions): Promise<void> {
     if (options.features.includes("api")) {
       spinner.start("添加 API 请求层...");
       await copyApiTemplate(templatesDir, targetDir);
+      if (withPlaywright) {
+        await fs.copy(path.join(templatesDir, "api/tests"), path.join(targetDir, "tests"));
+      }
       const extras = await fs.readJson(path.join(templatesDir, "api/package.json.extras"));
       await mergePackageJsonExtras(path.join(targetDir, "package.json"), extras, versions);
       spinner.succeed("API 请求层添加完成");
@@ -76,8 +83,12 @@ export async function generateProject(options: ProjectOptions): Promise<void> {
     try {
       await installDependencies(targetDir);
       spinner.succeed("依赖安装完成");
-    } catch {
+    } catch (error) {
       spinner.fail("依赖安装失败");
+      if (!process.stdin.isTTY) {
+        throw error;
+      }
+
       const { shouldContinue } = await prompts({
         type: "confirm",
         name: "shouldContinue",
@@ -140,6 +151,7 @@ async function copyPlaywrightTemplate(templatesDir: string, targetDir: string): 
 async function copyMswTemplate(templatesDir: string, targetDir: string): Promise<void> {
   const mswDir = path.join(templatesDir, "msw");
 
+  await fs.copy(path.join(mswDir, ".env.mock"), path.join(targetDir, ".env.mock"));
   await fs.copy(path.join(mswDir, "src/mocks"), path.join(targetDir, "src/mocks"));
 
   await fs.copy(path.join(mswDir, "src/main.tsx"), path.join(targetDir, "src/main.tsx"));

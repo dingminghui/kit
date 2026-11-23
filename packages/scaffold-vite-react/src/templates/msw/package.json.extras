@@ -1,5 +1,10 @@
 {
 	"devDependencies": {
 		"msw": true
+	},
+	"scripts": {
+		"dev:mock": "vite --open --mode mock",
+		"mock:init": "msw init public --no-save",
+		"postinstall": "pnpm run mock:init"
 	}
 }

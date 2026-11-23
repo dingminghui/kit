@@ -4,7 +4,7 @@ export function installDependencies(targetDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const child = spawn("pnpm", ["install"], {
       cwd: targetDir,
-      stdio: "pipe",
+      stdio: ["ignore", "inherit", "inherit"],
     });
 
     child.on("close", (code) => {

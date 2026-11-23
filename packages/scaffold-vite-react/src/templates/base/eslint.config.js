@@ -7,7 +7,15 @@ import tseslint from "typescript-eslint";
 
 export default [
   {
-    ignores: ["node_modules/**", "dist/**", "build/**", "coverage/**", "*.tsbuildinfo", ".tmp"],
+    ignores: [
+      "node_modules/**",
+      "dist/**",
+      "build/**",
+      "coverage/**",
+      "*.tsbuildinfo",
+      ".tmp",
+      "public/mockServiceWorker.js",
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

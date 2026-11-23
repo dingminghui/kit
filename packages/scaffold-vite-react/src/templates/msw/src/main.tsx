@@ -3,27 +3,29 @@ import { createRoot } from "react-dom/client";
 import { App } from "./App";
 import "./global.css";
 
-async function enableMocking(): Promise<void> {
-  if (import.meta.env.PROD) {
+async function bootstrap(): Promise<void> {
+  const container = document.querySelector("#root");
+  if (!container) {
     return;
   }
-  const { worker } = await import("./mocks/browser");
-  await worker.start();
+
+  const root = createRoot(container);
+  if (import.meta.env.DEV && import.meta.env.VITE_ENABLE_MOCK === "true") {
+    try {
+      const { worker } = await import("./mocks/browser");
+      await worker.start({ onUnhandledRequest: "bypass" });
+    } catch (error) {
+      console.error("Mock 服务启动失败:", error);
+      root.render(<p role="alert">Mock 服务启动失败。请运行 pnpm mock:init 后刷新页面。</p>);
+      return;
+    }
+  }
+
+  root.render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  );
 }
 
-const container = document.querySelector("#root");
-
-void enableMocking()
-  .then(() => {
-    if (container) {
-      const root = createRoot(container);
-      root.render(
-        <StrictMode>
-          <App />
-        </StrictMode>,
-      );
-    }
-  })
-  .catch((error: unknown) => {
-    console.error("Mock 服务启动失败:", error);
-  });
+void bootstrap();

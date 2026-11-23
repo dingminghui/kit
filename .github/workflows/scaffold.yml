@@ -1,0 +1,51 @@
+name: Verify React scaffold
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/scaffold.yml"
+      - ".node-version"
+      - "packages/scaffold-vite-react/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/scaffold.yml"
+      - ".node-version"
+      - "packages/scaffold-vite-react/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        features:
+          - base
+          - api
+          - msw
+          - playwright
+          - api msw
+          - api playwright
+          - msw playwright
+          - api msw playwright
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".node-version"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @kit/create build
+      - run: |
+          features=()
+          if [[ "$FEATURES" != base ]]; then
+            read -r -a features <<< "$FEATURES"
+          fi
+          pnpm --filter @kit/create exec tsx scripts/check-template.ts "${features[@]}"
+        env:
+          FEATURES: ${{ matrix.features }}

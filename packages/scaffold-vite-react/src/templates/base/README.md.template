@@ -44,6 +44,10 @@ pnpm test
 pnpm test:ci
 ```
 
+如果选择了 Playwright，先执行 `pnpm prepare:e2e` 安装 Chromium，再运行 `pnpm test:e2e:ci`。
+
+如果选择了 MSW，执行 `pnpm dev:mock` 启动 Mock 环境。依赖安装时会生成浏览器 worker，也可以用 `pnpm mock:init` 重新生成。
+
 ## 代码检查
 
 ```bash
