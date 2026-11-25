@@ -67,6 +67,8 @@ pnpm clean            # clean packages + root node_modules
 
 ## Releases
 
+Run `pnpm release:local` from the repository root to build the CLI and scaffold and link `kit` into your pnpm global bin. Then run `kit create my-app` from the directory where you want to create the project.
+
 Changesets: `pnpm changeset`, `pnpm version`, `pnpm release` (see root scripts).
 
 ## License
